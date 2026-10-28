@@ -1,0 +1,1365 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UMS | User Management System</title>
+
+  <style>
+    :root {
+      --navy: #142744;
+      --navy-light: #203a60;
+      --blue: #4169e1;
+      --bg: #f4f6fa;
+      --white: #ffffff;
+      --text: #202d40;
+      --muted: #7c8799;
+      --border: #e5eaf2;
+      --green: #16845b;
+      --red: #d64545;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 25px;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Segoe UI", Arial, sans-serif;
+      font-size: 14px;
+    }
+
+    button, input {
+      font: inherit;
+    }
+
+    button, a {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Sidebar */
+
+    .sidebar {
+      position: fixed;
+      inset: 0 auto 0 0;
+      width: 245px;
+      padding: 32px 18px;
+      background: var(--navy);
+      color: white;
+      z-index: 20;
+      overflow-y: auto;
+    }
+
+    .sidebar-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 10px 38px;
+      font-size: 23px;
+      font-weight: 800;
+      letter-spacing: 2px;
+    }
+
+    .brand-icon {
+      display: grid;
+      place-items: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: var(--blue);
+      color: white;
+      font-size: 16px;
+      letter-spacing: 0;
+    }
+
+    .nav-heading {
+      padding: 0 12px;
+      margin-bottom: 12px;
+      color: #9eacc2;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+    }
+
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 14px;
+      border-radius: 9px;
+      color: #d4deed;
+      text-decoration: none;
+      font-weight: 500;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      background: var(--navy-light);
+      color: white;
+    }
+
+    .nav-icon {
+      display: inline-grid;
+      place-items: center;
+      width: 22px;
+      font-size: 17px;
+    }
+
+    .sidebar-footer {
+      margin-top: 42px;
+      padding: 16px 12px;
+      border-top: 1px solid rgba(255,255,255,0.13);
+      color: #aab8cd;
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    /* Main layout */
+
+    .main-content {
+      margin-left: 245px;
+      padding: 34px 38px 50px;
+      min-height: 100vh;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 28px;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--blue);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      color: var(--navy);
+      font-size: clamp(25px, 3vw, 32px);
+      letter-spacing: -0.8px;
+    }
+
+    .page-subtitle {
+      margin: 9px 0 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .profile-chip {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 10px 14px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      white-space: nowrap;
+    }
+
+    .avatar {
+      display: grid;
+      place-items: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #e8edff;
+      color: var(--blue);
+      font-weight: 800;
+    }
+
+    .profile-name {
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .profile-role {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    /* Statistics */
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+      margin-bottom: 26px;
+    }
+
+    .stat-card {
+      min-width: 0;
+      padding: 23px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: 0 5px 20px rgba(23,42,70,0.025);
+    }
+
+    .stat-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .stat-icon {
+      display: grid;
+      place-items: center;
+      width: 39px;
+      height: 39px;
+      border-radius: 11px;
+      background: #edf1ff;
+      color: var(--blue);
+      font-size: 19px;
+    }
+
+    .stat-number {
+      margin-bottom: 9px;
+      overflow-wrap: anywhere;
+      color: var(--navy);
+      font-size: 30px;
+      font-weight: 750;
+    }
+
+    .stat-note {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    /* Panels */
+
+    .panel {
+      margin-bottom: 25px;
+      padding: 26px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: 0 5px 20px rgba(23,42,70,0.025);
+      scroll-margin-top: 24px;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 23px;
+    }
+
+    .panel h2 {
+      margin: 0;
+      color: var(--navy);
+      font-size: 19px;
+    }
+
+    .panel-description {
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .section-tag {
+      padding: 7px 10px;
+      border-radius: 7px;
+      background: #edf1ff;
+      color: var(--blue);
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    /* Form */
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      min-width: 0;
+    }
+
+    .form-field label {
+      color: #47546a;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .form-field input,
+    .search-input {
+      width: 100%;
+      min-width: 0;
+      padding: 12px 13px;
+      border: 1px solid #dce2ec;
+      border-radius: 9px;
+      background: white;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .form-field input:focus,
+    .search-input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(65,105,225,0.11);
+    }
+
+    .form-field input::placeholder,
+    .search-input::placeholder {
+      color: #a3adbd;
+    }
+
+    .form-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 23px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 11px 17px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      background: var(--navy);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--navy-light);
+    }
+
+    .btn-secondary {
+      background: #edf1f7;
+      color: #43516a;
+    }
+
+    .btn-secondary:hover {
+      background: #e1e7f0;
+    }
+
+    .btn-danger {
+      background: #fff0f0;
+      color: var(--red);
+    }
+
+    .btn-danger:hover {
+      background: #ffe0e0;
+    }
+
+    .btn-small {
+      padding: 8px 10px;
+      font-size: 11px;
+    }
+
+    /* Messages */
+
+    .message {
+      display: none;
+      margin-bottom: 20px;
+      padding: 13px 15px;
+      border-radius: 9px;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .message.success {
+      display: block;
+      border: 1px solid #b9e7d0;
+      background: #effaf4;
+      color: #146b48;
+    }
+
+    .message.error {
+      display: block;
+      border: 1px solid #f2c6c6;
+      background: #fff2f2;
+      color: #a72e2e;
+    }
+
+    /* User table and search */
+
+    .search-wrap {
+      width: 100%;
+      max-width: 360px;
+    }
+
+    .search-input {
+      font-size: 13px;
+    }
+
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    thead {
+      background: #f7f9fc;
+    }
+
+    th {
+      padding: 15px 14px;
+      color: #68758a;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 15px 14px;
+      border-top: 1px solid #edf0f5;
+      color: #526076;
+      font-size: 12px;
+    }
+
+    tbody tr:hover {
+      background: #fbfcff;
+    }
+
+    .user-cell {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 145px;
+    }
+
+    .user-avatar {
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      width: 35px;
+      height: 35px;
+      border-radius: 10px;
+      background: #eaf0ff;
+      color: #3459bf;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .user-name {
+      color: var(--navy);
+      font-weight: 700;
+    }
+
+    .user-email {
+      overflow-wrap: anywhere;
+    }
+
+    .actions {
+      display: flex;
+      gap: 7px;
+      white-space: nowrap;
+    }
+
+    .empty {
+      padding: 35px 15px;
+      text-align: center;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    /* Settings and footer */
+
+    .settings-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 17px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .settings-row:last-child {
+      border-bottom: 0;
+    }
+
+    .settings-title {
+      margin-bottom: 5px;
+      color: var(--navy);
+      font-weight: 700;
+    }
+
+    .settings-description {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .status-pill {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 20px;
+      background: #eaf8f0;
+      color: var(--green);
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .footer {
+      padding: 5px 0 15px;
+      color: var(--muted);
+      font-size: 11px;
+      text-align: center;
+    }
+
+    /* Responsive layout */
+
+    @media (max-width: 1050px) {
+      .main-content {
+        padding: 28px 22px 40px;
+      }
+
+      .stats-grid {
+        gap: 12px;
+      }
+
+      .stat-card {
+        padding: 18px;
+      }
+
+      .form-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .panel {
+        padding: 22px;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .sidebar {
+        position: relative;
+        width: 100%;
+        padding: 18px;
+      }
+
+      .sidebar-brand {
+        padding: 0 6px 17px;
+      }
+
+      .nav-heading,
+      .sidebar-footer {
+        display: none;
+      }
+
+      .sidebar-nav {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 7px;
+      }
+
+      .nav-link {
+        padding: 10px 12px;
+        font-size: 12px;
+      }
+
+      .main-content {
+        margin-left: 0;
+        padding: 25px 16px 35px;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stat-card {
+        padding: 20px;
+      }
+
+      .stat-top {
+        margin-bottom: 10px;
+      }
+
+      .topbar {
+        align-items: flex-start;
+      }
+
+      .profile-chip {
+        padding: 7px;
+      }
+
+      .profile-details {
+        display: none;
+      }
+
+      .panel-header {
+        flex-direction: column;
+      }
+
+      .search-wrap {
+        max-width: none;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .panel {
+        padding: 18px 14px;
+      }
+
+      .topbar {
+        gap: 10px;
+      }
+
+      .topbar h1 {
+        font-size: 24px;
+      }
+
+      .profile-chip {
+        border: 0;
+        background: transparent;
+      }
+
+      .actions {
+        flex-direction: column;
+      }
+
+      .nav-link {
+        gap: 6px;
+        padding: 9px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-icon">U</span>
+      <span>UMS</span>
+    </div>
+
+    <div class="nav-heading">MAIN MENU</div>
+
+    <nav class="sidebar-nav" aria-label="Main navigation">
+      <a href="#dashboard" class="nav-link active">
+        <span class="nav-icon">⌂</span>
+        Dashboard
+      </a>
+
+      <a href="#users" class="nav-link">
+        <span class="nav-icon">♙</span>
+        All Users
+      </a>
+
+      <a href="#add-user" class="nav-link">
+        <span class="nav-icon">＋</span>
+        Add User
+      </a>
+
+      <a href="#settings" class="nav-link">
+        <span class="nav-icon">⚙</span>
+        Settings
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      User Management System<br>
+      Full-stack project
+    </div>
+  </aside>
+
+  <!-- Main dashboard -->
+  <main class="main-content">
+
+    <header class="topbar" id="dashboard">
+      <div>
+        <p class="eyebrow">OVERVIEW</p>
+        <h1>User Management System</h1>
+        <p class="page-subtitle">
+          Manage user information from one simple dashboard.
+        </p>
+      </div>
+
+      <div class="profile-chip">
+        <div class="avatar">A</div>
+        <div class="profile-details">
+          <div class="profile-name">Administrator</div>
+          <div class="profile-role">User management</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Dashboard statistics -->
+    <section class="stats-grid" aria-label="User statistics">
+
+      <div class="stat-card">
+        <div class="stat-top">
+          <div class="stat-label">Total Users</div>
+          <div class="stat-icon">♙</div>
+        </div>
+        <div class="stat-number" id="totalUsers">0</div>
+        <div class="stat-note">Registered accounts</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-top">
+          <div class="stat-label">Average Age</div>
+          <div class="stat-icon">◷</div>
+        </div>
+        <div class="stat-number" id="averageAge">0</div>
+        <div class="stat-note">Years across users with an age</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-top">
+          <div class="stat-label">Latest User</div>
+          <div class="stat-icon">✦</div>
+        </div>
+        <div class="stat-number" id="latestUser">—</div>
+        <div class="stat-note">Most recently added account</div>
+      </div>
+
+    </section>
+
+    <!-- Status messages -->
+    <div id="message" class="message" role="status" aria-live="polite"></div>
+
+    <!-- Add and edit form -->
+    <section class="panel" id="add-user">
+      <div class="panel-header">
+        <div>
+          <h2 id="formTitle">Add New User</h2>
+          <p class="panel-description">
+            Enter the details below to create a user account.
+          </p>
+        </div>
+        <span class="section-tag" id="formTag">NEW RECORD</span>
+      </div>
+
+      <form id="userForm">
+        <div class="form-grid">
+
+          <div class="form-field">
+            <label for="name">Full Name</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              placeholder="Enter full name"
+              maxlength="100"
+              required
+            >
+          </div>
+
+          <div class="form-field">
+            <label for="email">Email Address</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="name@example.com"
+              maxlength="254"
+              required
+            >
+          </div>
+
+          <div class="form-field">
+            <label for="age">Age</label>
+            <input
+              type="number"
+              id="age"
+              name="age"
+              placeholder="Enter age"
+              min="1"
+              max="120"
+              step="1"
+              required
+            >
+          </div>
+
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" id="submitBtn">
+            ＋ Add User
+          </button>
+
+          <button
+            type="button"
+            class="btn btn-secondary"
+            id="cancelEditBtn"
+            hidden
+          >
+            Cancel Edit
+          </button>
+
+          <button type="reset" class="btn btn-secondary" id="resetBtn">
+            Clear Form
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- User table -->
+    <section class="panel" id="users">
+      <div class="panel-header">
+        <div>
+          <h2>All Users</h2>
+          <p class="panel-description">
+            View and manage registered users.
+          </p>
+        </div>
+
+        <div class="search-wrap">
+          <input
+            type="search"
+            id="searchInput"
+            class="search-input"
+            placeholder="⌕  Search name or email..."
+            aria-label="Search users by name or email"
+          >
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Email Address</th>
+              <th>Age</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+
+          <tbody id="usersTable">
+            <tr>
+              <td colspan="4" class="empty">Loading users...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="panel-description" id="tableSummary">
+        Loading user records...
+      </p>
+    </section>
+
+    <!-- Settings -->
+    <section class="panel" id="settings">
+      <div class="panel-header">
+        <div>
+          <h2>Settings & Information</h2>
+          <p class="panel-description">
+            View information about this application.
+          </p>
+        </div>
+        <span class="section-tag">APPLICATION</span>
+      </div>
+
+      <div class="settings-row">
+        <div>
+          <div class="settings-title">Application</div>
+          <div class="settings-description">
+            User Management System
+          </div>
+        </div>
+        <span class="status-pill">Active</span>
+      </div>
+
+      <div class="settings-row">
+        <div>
+          <div class="settings-title">Database</div>
+          <div class="settings-description">
+            User records are managed through the backend API and MongoDB.
+          </div>
+        </div>
+        <span class="status-pill" id="databaseStatus">Checking...</span>
+      </div>
+
+      <div class="settings-row">
+        <div>
+          <div class="settings-title">Available operations</div>
+          <div class="settings-description">
+            Create, read, update, delete and search user records.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      User Management System · Built with HTML, CSS, JavaScript, Node.js and MongoDB
+    </footer>
+
+  </main>
+
+  <script>
+    // Connect to the existing backend API.
+    const API_URL = "/api/users";
+
+    let users = [];
+    let editingId = null;
+    let messageTimeout;
+
+    const userForm = document.getElementById("userForm");
+    const usersTable = document.getElementById("usersTable");
+    const searchInput = document.getElementById("searchInput");
+    const messageBox = document.getElementById("message");
+    const submitBtn = document.getElementById("submitBtn");
+    const cancelEditBtn = document.getElementById("cancelEditBtn");
+    const resetBtn = document.getElementById("resetBtn");
+
+    // Make API requests and handle errors consistently.
+    async function apiRequest(url, options = {}) {
+      const response = await fetch(url, {
+        ...options,
+        credentials: "same-origin",
+        headers: {
+          ...(options.body ? { "Content-Type": "application/json" } : {}),
+          ...options.headers
+        }
+      });
+
+      if (response.status === 401 || response.status === 403) {
+        throw new Error(
+          "Authentication required. Sign in through the browser's authentication prompt and try again."
+        );
+      }
+
+      const contentType = response.headers.get("content-type") || "";
+      let data = null;
+
+      if (contentType.includes("application/json")) {
+        data = await response.json();
+      } else {
+        const text = await response.text();
+        data = text ? { message: text } : null;
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          data?.message || data?.error || `Request failed (${response.status}).`
+        );
+      }
+
+      return data;
+    }
+
+    function showMessage(text, type = "success") {
+      clearTimeout(messageTimeout);
+
+      messageBox.textContent = text;
+      messageBox.className = `message ${type}`;
+
+      messageTimeout = setTimeout(() => {
+        messageBox.className = "message";
+        messageBox.textContent = "";
+      }, 4500);
+    }
+
+    function escapeHTML(value) {
+      return String(value ?? "").replace(/[&<>"']/g, character => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      })[character]);
+    }
+
+    function getUserId(user) {
+      return user._id || user.id;
+    }
+
+    function getInitials(name) {
+      return String(name || "U")
+        .trim()
+        .split(/\s+/)
+        .slice(0, 2)
+        .map(part => part.charAt(0))
+        .join("")
+        .toUpperCase();
+    }
+
+    // Update dashboard statistics using ALL users, not search results.
+    function updateStatistics() {
+      document.getElementById("totalUsers").textContent = users.length;
+
+      const validAges = users
+        .map(user => Number(user.age))
+        .filter(age => Number.isFinite(age) && age > 0);
+
+      const averageAge = validAges.length
+        ? Math.round(
+            validAges.reduce((sum, age) => sum + age, 0) /
+            validAges.length
+          )
+        : 0;
+
+      document.getElementById("averageAge").textContent = averageAge;
+
+      const latestUser = users.length
+        ? users[users.length - 1].name
+        : "—";
+
+      document.getElementById("latestUser").textContent =
+        latestUser || "—";
+    }
+
+    // Render the user table and apply the search filter.
+    function renderUsers() {
+      updateStatistics();
+
+      const searchTerm = searchInput.value.trim().toLowerCase();
+
+      const filteredUsers = users.filter(user => {
+        const name = String(user.name || "").toLowerCase();
+        const email = String(user.email || "").toLowerCase();
+
+        return name.includes(searchTerm) || email.includes(searchTerm);
+      });
+
+      document.getElementById("tableSummary").textContent =
+        searchTerm
+          ? `Showing ${filteredUsers.length} matching user(s) out of ${users.length}.`
+          : `${users.length} registered user(s).`;
+
+      if (filteredUsers.length === 0) {
+        const emptyMessage = searchTerm
+          ? "No matching users found. Try another name or email."
+          : "No users added yet. Use the form above to create your first user.";
+
+        usersTable.innerHTML = `
+          <tr>
+            <td colspan="4" class="empty">
+              ${escapeHTML(emptyMessage)}
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      usersTable.innerHTML = filteredUsers.map(user => {
+        const id = getUserId(user);
+
+        return `
+          <tr>
+            <td>
+              <div class="user-cell">
+                <div class="user-avatar">
+                  ${escapeHTML(getInitials(user.name))}
+                </div>
+                <span class="user-name">
+                  ${escapeHTML(user.name)}
+                </span>
+              </div>
+            </td>
+
+            <td class="user-email">
+              ${escapeHTML(user.email)}
+            </td>
+
+            <td>${escapeHTML(user.age)}</td>
+
+            <td>
+              <div class="actions">
+                <button
+                  type="button"
+                  class="btn btn-secondary btn-small"
+                  data-action="edit"
+                  data-id="${escapeHTML(id)}"
+                >Edit</button>
+
+                <button
+                  type="button"
+                  class="btn btn-danger btn-small"
+                  data-action="delete"
+                  data-id="${escapeHTML(id)}"
+                >Delete</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    // Fetch the latest user records from the backend.
+    async function loadUsers(showSuccess = false) {
+      usersTable.innerHTML = `
+        <tr>
+          <td colspan="4" class="empty">Loading users...</td>
+        </tr>
+      `;
+
+      try {
+        const data = await apiRequest(API_URL);
+
+        if (!Array.isArray(data)) {
+          throw new Error(
+            "The API response was not a user list. Check your backend route."
+          );
+        }
+
+        users = data;
+        renderUsers();
+
+        document.getElementById("databaseStatus").textContent = "Connected";
+
+        if (showSuccess) {
+          showMessage("User list refreshed successfully.");
+        }
+      } catch (error) {
+        usersTable.innerHTML = `
+          <tr>
+            <td colspan="4" class="empty">
+              ${escapeHTML(error.message)}
+              <br>
+              <button
+                type="button"
+                class="btn btn-secondary btn-small"
+                id="retryBtn"
+                style="margin-top:12px"
+              >Try Again</button>
+            </td>
+          </tr>
+        `;
+
+        document.getElementById("databaseStatus").textContent = "Check connection";
+        document.getElementById("tableSummary").textContent =
+          "Could not load user records.";
+
+        document.getElementById("totalUsers").textContent = "—";
+        document.getElementById("averageAge").textContent = "—";
+        document.getElementById("latestUser").textContent = "—";
+
+        document.getElementById("retryBtn").addEventListener("click", () => {
+          loadUsers();
+        });
+
+        showMessage(error.message, "error");
+      }
+    }
+
+    // Add a new user or update the selected user.
+    userForm.addEventListener("submit", async event => {
+      event.preventDefault();
+
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const age = Number(document.getElementById("age").value);
+
+      if (!name || !email || !Number.isInteger(age) || age < 1 || age > 120) {
+        showMessage("Please enter a valid name, email and age.", "error");
+        return;
+      }
+
+      const payload = { name, email, age };
+      const isEditing = editingId !== null;
+
+      const url = isEditing
+        ? `${API_URL}/${encodeURIComponent(editingId)}`
+        : API_URL;
+
+      const method = isEditing ? "PUT" : "POST";
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = isEditing ? "Saving changes..." : "Adding user...";
+
+      try {
+        await apiRequest(url, {
+          method,
+          body: JSON.stringify(payload)
+        });
+
+        userForm.reset();
+        editingId = null;
+        resetFormMode();
+
+        await loadUsers();
+
+        showMessage(
+          isEditing
+            ? "User updated successfully."
+            : "User added successfully."
+        );
+
+        document.getElementById("users").scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+      } catch (error) {
+        showMessage(error.message, "error");
+      } finally {
+        submitBtn.disabled = false;
+
+        if (editingId !== null) {
+          submitBtn.textContent = "Save Changes";
+        } else {
+          submitBtn.textContent = "＋ Add User";
+        }
+      }
+    });
+
+    function resetFormMode() {
+      document.getElementById("formTitle").textContent = "Add New User";
+      document.getElementById("formTag").textContent = "NEW RECORD";
+      submitBtn.textContent = "＋ Add User";
+      cancelEditBtn.hidden = true;
+      document.getElementById("name").focus();
+    }
+
+    // Handle Edit and Delete buttons using event delegation.
+    usersTable.addEventListener("click", async event => {
+      const button = event.target.closest("button[data-action]");
+
+      if (!button) return;
+
+      const id = button.dataset.id;
+      const action = button.dataset.action;
+      const user = users.find(item => String(getUserId(item)) === String(id));
+
+      if (!user) {
+        showMessage("That user could not be found. Refresh the list.", "error");
+        return;
+      }
+
+      if (action === "edit") {
+        editingId = id;
+
+        document.getElementById("name").value = user.name || "";
+        document.getElementById("email").value = user.email || "";
+        document.getElementById("age").value = user.age ?? "";
+
+        document.getElementById("formTitle").textContent = "Edit User";
+        document.getElementById("formTag").textContent = "EDIT RECORD";
+        submitBtn.textContent = "Save Changes";
+        cancelEditBtn.hidden = false;
+
+        document.getElementById("add-user").scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+
+        document.getElementById("name").focus();
+        return;
+      }
+
+      if (action === "delete") {
+        const confirmed = confirm(
+          `Are you sure you want to delete ${user.name}? This cannot be undone.`
+        );
+
+        if (!confirmed) return;
+
+        button.disabled = true;
+        button.textContent = "Deleting...";
+
+        try {
+          await apiRequest(`${API_URL}/${encodeURIComponent(id)}`, {
+            method: "DELETE"
+          });
+
+          if (String(editingId) === String(id)) {
+            editingId = null;
+            userForm.reset();
+            resetFormMode();
+          }
+
+          await loadUsers();
+          showMessage("User deleted successfully.");
+        } catch (error) {
+          showMessage(error.message, "error");
+          button.disabled = false;
+          button.textContent = "Delete";
+        }
+      }
+    });
+
+    // Search as the user types.
+    searchInput.addEventListener("input", renderUsers);
+
+    // Cancel editing and return to the add-user form.
+    cancelEditBtn.addEventListener("click", () => {
+      editingId = null;
+      userForm.reset();
+      resetFormMode();
+    });
+
+    // Clearing the form should also cancel edit mode.
+    resetBtn.addEventListener("click", () => {
+      editingId = null;
+      setTimeout(resetFormMode, 0);
+    });
+
+    // Update active navigation styling when a section is selected.
+    const navLinks = document.querySelectorAll(".nav-link");
+
+    navLinks.forEach(link => {
+      link.addEventListener("click", () => {
+        navLinks.forEach(item => item.classList.remove("active"));
+        link.classList.add("active");
+      });
+    });
+
+    // Load saved users when the page opens.
+    loadUsers();
+  </script>
+
+</body>
+</html>
